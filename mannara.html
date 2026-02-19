@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mànnara — Sicily's Living Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --cream:      #F4EDD8;
+  --parchment:  #E8D9B8;
+  --terracotta: #C4622D;
+  --terra-dk:   #9B3F18;
+  --volcanic:   #1A1210;
+  --lava:       #2E1A0E;
+  --sage:       #6B7E5A;
+  --sage-lt:    #A8BC96;
+  --gold:       #C89B3C;
+  --gold-lt:    #DDB96E;
+  --electric:   #C4F04E; /* citrus/agritech accent */
+  --smoke:      rgba(26,18,16,0.06);
+
+  --ff-display: 'Cormorant Garamond', Georgia, serif;
+  --ff-body:    'Outfit', system-ui, sans-serif;
+  --ff-mono:    'DM Mono', monospace;
+
+  --ease-out-expo: cubic-bezier(0.19,1,0.22,1);
+}
+
+/* ─── RESET ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ff-body);
+  background: var(--cream);
+  color: var(--volcanic);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+/* ─── NOISE OVERLAY ──────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.030;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ─── TYPOGRAPHY ──────────────────────────────────────────── */
+h1,h2,h3,h4 { font-family: var(--ff-display); font-weight: 300; line-height: 1.1; }
+.display { font-size: clamp(3.5rem, 8vw, 9rem); letter-spacing: -0.02em; }
+.headline { font-size: clamp(2.2rem, 5vw, 5.5rem); letter-spacing: -0.01em; }
+.subheadline { font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 300; }
+p { line-height: 1.7; }
+.mono { font-family: var(--ff-mono); font-weight: 300; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.label { font-family: var(--ff-mono); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.5; }
+
+/* ─── LAYOUT HELPERS ─────────────────────────────────────── */
+.container { max-width: 1280px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media(max-width:900px) {
+  .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr; }
+}
+@media(min-width:600px) and (max-width:900px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+}
+
+/* ─── NAV ──────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.25rem clamp(1.5rem, 5vw, 4rem);
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(244,237,216,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(196,98,45,0.12);
+}
+.nav-logo {
+  font-family: var(--ff-display);
+  font-size: 1.6rem; font-weight: 600;
+  color: var(--terracotta);
+  letter-spacing: 0.02em;
+}
+.nav-logo span { color: var(--volcanic); font-weight: 300; font-style: italic; }
+.nav-links { display: flex; gap: 2.5rem; align-items: center; }
+.nav-links a { font-size: 0.85rem; font-weight: 400; letter-spacing: 0.06em; opacity: 0.65; transition: opacity 0.2s; }
+.nav-links a:hover { opacity: 1; }
+.nav-cta {
+  background: var(--terracotta); color: var(--cream);
+  padding: 0.55rem 1.3rem; border-radius: 2rem;
+  font-size: 0.85rem; font-weight: 500;
+  opacity: 1 !important;
+  transition: background 0.2s, transform 0.2s;
+}
+.nav-cta:hover { background: var(--terra-dk); transform: translateY(-1px); }
+@media(max-width:700px) { .nav-links { display: none; } }
+
+/* ─── HERO ──────────────────────────────────────────────────── */
+.hero {
+  min-height: 100svh;
+  background: var(--volcanic);
+  position: relative;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: clamp(3rem, 7vh, 7rem);
+  overflow: hidden;
+}
+
+/* Sicilian sun rings */
+.hero-rings {
+  position: absolute;
+  top: -20%; right: -10%;
+  width: 80vmax; height: 80vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, #C4622D 0%, #9B3F18 25%, #4A1A08 55%, transparent 72%);
+  opacity: 0.55;
+  animation: breathe 8s ease-in-out infinite;
+}
+.hero-rings::before {
+  content: '';
+  position: absolute; inset: 12%;
+  border-radius: 50%;
+  border: 1px solid rgba(196,98,45,0.3);
+  animation: spin-slow 60s linear infinite;
+}
+.hero-rings::after {
+  content: '';
+  position: absolute; inset: 24%;
+  border-radius: 50%;
+  border: 1px solid rgba(196,98,45,0.2);
+  animation: spin-slow 90s linear infinite reverse;
+}
+
+/* Terrain line art */
+.hero-terrain {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(to top, #2E1A0E 0%, transparent 100%);
+}
+.hero-terrain::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 30px,
+    rgba(196,98,45,0.04) 30px,
+    rgba(196,98,45,0.04) 31px
+  );
+}
+
+/* Grid lines */
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(196,98,45,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196,98,45,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 0 clamp(1.5rem, 5vw, 4rem);
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  background: rgba(196,98,45,0.15);
+  border: 1px solid rgba(196,98,45,0.35);
+  padding: 0.4rem 1rem; border-radius: 2rem;
+  color: var(--gold-lt);
+  font-family: var(--ff-mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.8s var(--ease-out-expo) both;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--electric);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(3.8rem, 9vw, 10rem);
+  font-weight: 300;
+  color: var(--cream);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  max-width: 14ch;
+  animation: fadeUp 0.9s 0.1s var(--ease-out-expo) both;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--terracotta);
+}
+.hero h1 .accent { color: var(--electric); font-style: normal; }
+
+.hero-sub {
+  margin-top: 2.5rem;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  color: rgba(244,237,216,0.65);
+  max-width: 55ch;
+  font-weight: 300;
+  animation: fadeUp 1s 0.2s var(--ease-out-expo) both;
+}
+
+.hero-actions {
+  margin-top: 3rem;
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  animation: fadeUp 1s 0.3s var(--ease-out-expo) both;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--terracotta); color: var(--cream);
+  padding: 0.9rem 2rem; border-radius: 3rem;
+  font-size: 0.95rem; font-weight: 500; letter-spacing: 0.02em;
+  transition: background 0.2s, transform 0.25s var(--ease-out-expo), box-shadow 0.2s;
+}
+.btn-primary:hover {
+  background: var(--terra-dk);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(196,98,45,0.4);
+}
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: transparent; color: var(--cream);
+  padding: 0.9rem 2rem; border-radius: 3rem;
+  border: 1px solid rgba(244,237,216,0.25);
+  font-size: 0.95rem; font-weight: 400; letter-spacing: 0.02em;
+  transition: border-color 0.2s, transform 0.25s var(--ease-out-expo);
+}
+.btn-secondary:hover { border-color: rgba(244,237,216,0.6); transform: translateY(-2px); }
+
+.hero-stats {
+  position: absolute; bottom: clamp(3rem, 7vh, 7rem); right: clamp(1.5rem, 5vw, 4rem);
+  display: flex; flex-direction: column; gap: 1.5rem;
+  animation: fadeUp 1s 0.4s var(--ease-out-expo) both;
+}
+.stat {
+  text-align: right;
+}
+.stat-num {
+  font-family: var(--ff-display);
+  font-size: 2.4rem; font-weight: 300;
+  color: var(--gold-lt);
+  line-height: 1;
+}
+.stat-label {
+  font-family: var(--ff-mono);
+  font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(244,237,216,0.45);
+  margin-top: 0.2rem;
+}
+@media(max-width:700px) { .hero-stats { display: none; } }
+
+/* Scroll hint */
+.scroll-hint {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  color: rgba(244,237,216,0.3);
+  font-family: var(--ff-mono); font-size: 0.65rem; letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, transparent, rgba(244,237,216,0.4));
+  animation: scrollLine 2s ease-in-out infinite;
+}
+
+/* ─── SECTION BASE ──────────────────────────────────────────── */
+section { padding: clamp(5rem, 10vh, 9rem) 0; }
+.section-label {
+  font-family: var(--ff-mono); font-size: 0.72rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.section-label::after {
+  content: '';
+  flex: 1; max-width: 60px;
+  height: 1px; background: var(--terracotta); opacity: 0.4;
+}
+
+/* ─── MANIFESTO / INTRO ──────────────────────────────────────── */
+.manifesto {
+  background: var(--cream);
+  position: relative;
+}
+.manifesto-inner {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 5rem; align-items: center;
+}
+.manifesto-quote {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1.2;
+  color: var(--volcanic);
+}
+.manifesto-quote em { color: var(--terracotta); font-style: italic; }
+.manifesto-quote .number {
+  font-family: var(--ff-display);
+  font-size: 0.5em;
+  vertical-align: super;
+  color: var(--terracotta);
+  font-style: normal;
+}
+.manifesto-body p { color: rgba(26,18,16,0.72); font-size: 1.05rem; margin-bottom: 1.2rem; }
+.manifesto-body p:last-child { margin-bottom: 0; }
+@media(max-width:900px) { .manifesto-inner { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+/* Ceramic ornament border */
+.ornament-border {
+  width: 100%;
+  height: 12px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--terracotta) 0px, var(--terracotta) 8px,
+    transparent 8px, transparent 16px,
+    var(--gold) 16px, var(--gold) 20px,
+    transparent 20px, transparent 28px,
+    var(--sage) 28px, var(--sage) 32px,
+    transparent 32px, transparent 40px
+  );
+  opacity: 0.35;
+}
+
+/* ─── HOW IT WORKS ───────────────────────────────────────────── */
+.how {
+  background: var(--volcanic);
+  color: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+.how::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0, transparent 60px,
+    rgba(196,98,45,0.025) 60px, rgba(196,98,45,0.025) 61px
+  );
+}
+.how .section-label { color: var(--gold-lt); }
+.how .section-label::after { background: var(--gold-lt); }
+.how-headline { font-family: var(--ff-display); font-size: clamp(2.2rem,4.5vw,4.5rem); color: var(--cream); margin-bottom: 1rem; }
+.how-headline em { color: var(--terracotta); font-style: italic; }
+.how-sub { color: rgba(244,237,216,0.55); font-size: 1.05rem; max-width: 60ch; margin-bottom: 4rem; }
+
+.pillar-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; }
+.pillar {
+  padding: 2.5rem;
+  border: 1px solid rgba(244,237,216,0.07);
+  position: relative;
+  transition: background 0.3s;
+}
+.pillar:hover { background: rgba(196,98,45,0.07); }
+.pillar-num {
+  font-family: var(--ff-display);
+  font-size: 5rem; font-weight: 300;
+  color: rgba(196,98,45,0.15);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+.pillar-icon {
+  width: 44px; height: 44px;
+  border: 1px solid rgba(196,98,45,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: var(--terracotta);
+  background: rgba(196,98,45,0.07);
+}
+.pillar h3 {
+  font-family: var(--ff-display);
+  font-size: 1.5rem; font-weight: 400;
+  color: var(--cream);
+  margin-bottom: 0.75rem;
+}
+.pillar p { color: rgba(244,237,216,0.6); font-size: 0.95rem; line-height: 1.7; }
+.pillar-tag {
+  margin-top: 1.5rem;
+  display: inline-block;
+  background: rgba(196,244,78,0.1);
+  border: 1px solid rgba(196,244,78,0.25);
+  color: var(--electric);
+  padding: 0.25rem 0.75rem; border-radius: 2rem;
+  font-family: var(--ff-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+}
+@media(max-width:900px) { .pillar-grid { grid-template-columns: 1fr; } }
+
+/* ─── PERSONAS: PRODUCERS ─────────────────────────────────────── */
+.producers { background: var(--parchment); }
+
+.card-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 3rem; }
+@media(max-width:1100px) { .card-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:600px) { .card-grid { grid-template-columns: 1fr; } }
+
+/* Flip card */
+.flip-card { perspective: 1200px; height: 300px; cursor: pointer; }
+.flip-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s var(--ease-out-expo);
+}
+.flip-card:hover .flip-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.5rem;
+  padding: 1.75rem;
+  overflow: hidden;
+}
+.flip-front {
+  background: var(--cream);
+  border: 1px solid rgba(196,98,45,0.15);
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.flip-front-bg {
+  position: absolute; inset: 0;
+  opacity: 0.08;
+  font-family: var(--ff-display);
+  font-size: 8rem; font-weight: 300;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--terracotta);
+  pointer-events: none;
+  line-height: 1;
+}
+.flip-front h4 { font-family: var(--ff-display); font-size: 1.35rem; font-weight: 400; color: var(--volcanic); }
+.flip-front .label { margin-bottom: 0.5rem; }
+.flip-front p { font-size: 0.88rem; color: rgba(26,18,16,0.6); margin-top: 0.4rem; }
+.flip-back {
+  background: var(--terracotta);
+  transform: rotateY(180deg);
+  display: flex; flex-direction: column; justify-content: center; gap: 1rem;
+}
+.flip-back h4 { font-family: var(--ff-display); font-size: 1.25rem; font-weight: 300; color: var(--cream); }
+.flip-back ul { list-style: none; }
+.flip-back ul li {
+  font-size: 0.88rem; color: rgba(244,237,216,0.85);
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(244,237,216,0.1);
+  display: flex; gap: 0.6rem; align-items: flex-start;
+}
+.flip-back ul li::before { content: '↗'; flex-shrink: 0; opacity: 0.7; }
+
+/* ─── PERSONAS: BUYERS ─────────────────────────────────────── */
+.buyers { background: var(--cream); }
+
+.buyer-card {
+  background: var(--cream);
+  border: 1px solid rgba(26,18,16,0.1);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s;
+}
+.buyer-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(26,18,16,0.1);
+}
+.buyer-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--terracotta);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+.buyer-card:hover::before { transform: scaleX(1); }
+.buyer-emoji { font-size: 2.2rem; margin-bottom: 1rem; }
+.buyer-card h3 { font-family: var(--ff-display); font-size: 1.5rem; margin-bottom: 0.6rem; }
+.buyer-card .tagline { font-size: 0.88rem; color: var(--terracotta); font-weight: 500; margin-bottom: 1rem; font-family: var(--ff-mono); letter-spacing: 0.06em; }
+.buyer-card p { font-size: 0.9rem; color: rgba(26,18,16,0.65); line-height: 1.7; }
+.buyer-card .benefit-list { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.buyer-card .benefit-list span { font-size: 0.85rem; color: rgba(26,18,16,0.7); display: flex; align-items: center; gap: 0.5rem; }
+.buyer-card .benefit-list span::before { content: '✓'; color: var(--sage); font-weight: 600; }
+
+/* ─── AGRITECH ─────────────────────────────────────────────── */
+.agritech {
+  background: var(--lava);
+  color: var(--cream);
+  overflow: hidden;
+  position: relative;
+}
+.agritech::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(196,98,45,0.12) 0%, transparent 65%);
+  pointer-events: none;
+}
+.agritech .section-label { color: var(--electric); }
+.agritech .section-label::after { background: var(--electric); }
+
+.agritech-inner {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 5rem; align-items: center;
+  position: relative; z-index: 1;
+}
+@media(max-width:900px) { .agritech-inner { grid-template-columns: 1fr; gap: 3rem; } }
+
+.agritech h2 { font-size: clamp(2rem,4vw,4rem); margin-bottom: 1rem; }
+.agritech h2 em { color: var(--electric); font-style: italic; }
+.agritech p { color: rgba(244,237,216,0.65); font-size: 0.98rem; line-height: 1.75; margin-bottom: 1rem; }
+
+.tech-stack {
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+.tech-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(196,244,78,0.15);
+  border-radius: 0.4rem;
+  background: rgba(196,244,78,0.04);
+  transition: background 0.2s;
+}
+.tech-row:hover { background: rgba(196,244,78,0.08); }
+.tech-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--electric); flex-shrink: 0; }
+.tech-row-label { font-family: var(--ff-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--electric); min-width: 130px; }
+.tech-row-desc { font-size: 0.85rem; color: rgba(244,237,216,0.5); }
+
+/* Animated chart */
+.mock-chart {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(244,237,216,0.07);
+  border-radius: 0.5rem;
+  background: rgba(0,0,0,0.2);
+}
+.chart-label { font-family: var(--ff-mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(244,237,216,0.35); margin-bottom: 0.75rem; }
+.chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 70px; }
+.bar {
+  flex: 1; border-radius: 2px 2px 0 0;
+  background: linear-gradient(to top, var(--terracotta), var(--gold));
+  opacity: 0.7;
+  transform-origin: bottom;
+  animation: barGrow 1s var(--ease-out-expo) both;
+}
+.bar:nth-child(1)  { height: 45%; animation-delay: 0.1s; }
+.bar:nth-child(2)  { height: 65%; animation-delay: 0.15s; }
+.bar:nth-child(3)  { height: 50%; animation-delay: 0.2s; }
+.bar:nth-child(4)  { height: 80%; animation-delay: 0.25s; background: linear-gradient(to top, var(--electric), #a0d040); opacity:0.9; }
+.bar:nth-child(5)  { height: 70%; animation-delay: 0.3s; }
+.bar:nth-child(6)  { height: 90%; animation-delay: 0.35s; }
+.bar:nth-child(7)  { height: 60%; animation-delay: 0.4s; }
+.bar:nth-child(8)  { height: 75%; animation-delay: 0.45s; }
+.bar:nth-child(9)  { height: 55%; animation-delay: 0.5s; }
+.bar:nth-child(10) { height: 95%; animation-delay: 0.55s; background: linear-gradient(to top, var(--electric), #a0d040); opacity:0.9; }
+.bar:nth-child(11) { height: 85%; animation-delay: 0.6s; }
+.bar:nth-child(12) { height: 100%; animation-delay: 0.65s; }
+.chart-meta { display: flex; justify-content: space-between; margin-top: 0.5rem; }
+.chart-meta span { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(244,237,216,0.25); }
+
+/* ─── VS COMPETITORS ─────────────────────────────────────── */
+.versus { background: var(--cream); }
+.versus h2 { font-family: var(--ff-display); font-size: clamp(2rem,4vw,3.8rem); margin-bottom: 0.75rem; }
+.versus-sub { color: rgba(26,18,16,0.55); max-width: 55ch; margin-bottom: 3.5rem; font-size: 1rem; }
+
+.compare-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+.compare-table th {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-family: var(--ff-mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: rgba(26,18,16,0.5);
+  border-bottom: 1px solid rgba(26,18,16,0.1);
+}
+.compare-table th:first-child { width: 38%; }
+.compare-table td {
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(26,18,16,0.06);
+  vertical-align: middle;
+  line-height: 1.5;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table td:first-child { font-weight: 500; }
+.compare-table .col-us { background: rgba(196,98,45,0.05); }
+.compare-table td.yes { color: var(--sage); }
+.compare-table td.yes::before { content: '✓ '; font-weight: 700; }
+.compare-table td.no  { color: rgba(26,18,16,0.3); }
+.compare-table td.no::before  { content: '— '; }
+.compare-table td.partial { color: var(--gold); }
+.compare-table td.partial::before { content: '◑ '; }
+.compare-table .us-head { color: var(--terracotta); font-weight: 600 !important; }
+@media(max-width:700px) {
+  .compare-table thead { display: none; }
+  .compare-table tr { display: block; margin-bottom: 1.5rem; border: 1px solid rgba(26,18,16,0.1); border-radius: 0.5rem; padding: 1rem; }
+  .compare-table td { display: flex; justify-content: space-between; border: none; padding: 0.4rem 0; }
+  .compare-table td::before { font-family: var(--ff-mono); font-size: 0.7rem; opacity: 0.4; text-transform: uppercase; }
+}
+
+/* ─── CTA / WAITLIST ─────────────────────────────────────── */
+.waitlist {
+  background: var(--volcanic);
+  color: var(--cream);
+  overflow: hidden;
+  position: relative;
+}
+.waitlist::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(196,98,45,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(107,126,90,0.1) 0%, transparent 50%);
+}
+.waitlist-inner { position: relative; z-index: 1; }
+.waitlist h2 { font-family: var(--ff-display); font-size: clamp(2.5rem,5vw,5rem); max-width: 16ch; margin-bottom: 0.75rem; }
+.waitlist h2 em { color: var(--terracotta); font-style: italic; }
+.waitlist-sub { color: rgba(244,237,216,0.55); max-width: 52ch; margin-bottom: 4rem; font-size: 1rem; line-height: 1.7; }
+
+.waitlist-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media(max-width:700px) { .waitlist-cards { grid-template-columns: 1fr; } }
+
+.waitlist-card {
+  padding: 2.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid;
+}
+.waitlist-card.producer {
+  border-color: rgba(196,98,45,0.3);
+  background: rgba(196,98,45,0.06);
+}
+.waitlist-card.buyer {
+  border-color: rgba(107,126,90,0.35);
+  background: rgba(107,126,90,0.06);
+}
+.waitlist-card .wl-type {
+  font-family: var(--ff-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.producer .wl-type { color: var(--terracotta); }
+.buyer .wl-type { color: var(--sage-lt); }
+.waitlist-card h3 { font-family: var(--ff-display); font-size: 1.8rem; color: var(--cream); margin-bottom: 0.6rem; }
+.waitlist-card p { color: rgba(244,237,216,0.55); font-size: 0.9rem; line-height: 1.65; margin-bottom: 1.8rem; }
+.waitlist-card .perks {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+.waitlist-card .perks span {
+  font-size: 0.85rem;
+  color: rgba(244,237,216,0.7);
+  display: flex; align-items: flex-start; gap: 0.6rem;
+}
+.producer .perks span::before { content: '⬡'; color: var(--terracotta); flex-shrink: 0; }
+.buyer .perks span::before { content: '⬡'; color: var(--sage-lt); flex-shrink: 0; }
+
+.btn-wl-producer {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--terracotta); color: var(--cream);
+  padding: 0.9rem 1.8rem; border-radius: 3rem;
+  font-size: 0.92rem; font-weight: 500;
+  transition: background 0.2s, transform 0.25s var(--ease-out-expo), box-shadow 0.2s;
+  width: 100%; justify-content: center;
+}
+.btn-wl-producer:hover { background: var(--terra-dk); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(196,98,45,0.4); }
+
+.btn-wl-buyer {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: var(--sage); color: var(--cream);
+  padding: 0.9rem 1.8rem; border-radius: 3rem;
+  font-size: 0.92rem; font-weight: 500;
+  transition: background 0.2s, transform 0.25s var(--ease-out-expo), box-shadow 0.2s;
+  width: 100%; justify-content: center;
+}
+.btn-wl-buyer:hover { background: #5a6e4a; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(107,126,90,0.4); }
+
+.email-note {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(244,237,216,0.08);
+  font-family: var(--ff-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(244,237,216,0.3);
+  text-align: center;
+}
+.email-note a { color: rgba(244,237,216,0.5); text-decoration: underline; }
+.email-note a:hover { color: rgba(244,237,216,0.8); }
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer {
+  background: var(--lava);
+  color: rgba(244,237,216,0.5);
+  padding: 3rem 0;
+  border-top: 1px solid rgba(196,98,45,0.12);
+}
+.footer-inner {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1.5rem;
+}
+.footer-logo { font-family: var(--ff-display); font-size: 1.3rem; color: rgba(244,237,216,0.8); }
+.footer-logo span { color: var(--terracotta); }
+.footer-center { font-family: var(--ff-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-align: center; }
+.footer-right { font-family: var(--ff-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-align: right; }
+.footer-right a { color: var(--terracotta); }
+
+/* ─── KEYFRAMES ──────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50%       { transform: scale(1.04) rotate(1deg); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+@keyframes scrollLine {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+@keyframes barGrow {
+  from { transform: scaleY(0); opacity: 0; }
+  to   { transform: scaleY(1); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ───────────────────────── NAV ───────────────────────── -->
+<nav>
+  <div class="nav-logo">Mànnara <span>·</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#producers">Producers</a>
+    <a href="#buyers">Buyers</a>
+    <a href="#technology">Agritech</a>
+    <a href="#waitlist" class="nav-cta">Join Early Access</a>
+  </div>
+</nav>
+
+<!-- ───────────────────────── HERO ───────────────────────── -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-rings"></div>
+  <div class="hero-terrain"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Early Access · Sicily · Europe</div>
+    <h1>Sicily's finest.<br><em>Always in season.</em><br>Never <span class="accent">out of stock.</span></h1>
+    <p class="hero-sub">The first agritech-powered collective marketplace for Sicilian food producers — connecting small farms to European tables through smart forecasting, network logistics, and zero dead inventory.</p>
+    <div class="hero-actions">
+      <a href="#waitlist" class="btn-primary">Reserve your spot →</a>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">0 €</div>
+      <div class="stat-label">Inventory risk</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Drop-shipped</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">27M+</div>
+      <div class="stat-label">EU premium food buyers</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ─────────────────────── ORNAMENT ─────────────────────── -->
+<div class="ornament-border"></div>
+
+<!-- ───────────────────────── MANIFESTO ─────────────────────── -->
+<section class="manifesto" id="manifesto">
+  <div class="container">
+    <div class="manifesto-inner">
+      <div>
+        <div class="section-label">The Problem</div>
+        <div class="manifesto-quote">
+          Great Sicilian producers<em> exist in isolation.</em><br>
+          Europe doesn't know<br>they're out of<em> stock.</em>
+        </div>
+      </div>
+      <div class="manifesto-body">
+        <p>Sicily is home to some of Europe's most extraordinary food — Bronte pistachios, Pachino tomatoes, Ragusano cheese, Modica chocolate, Etna wines. Yet most small producers have no reach beyond their local market. When a German deli or a Parisian restaurant tries to source directly, they hit a wall: the producer either doesn't sell online, ships inconsistently, or runs dry mid-season.</p>
+        <p>Existing platforms like <strong>DallaSicilia</strong>, <strong>InSicilia</strong>, or <strong>Bottega Sicana</strong> aggregate producers, but they operate as simple storefronts — no demand forecasting, no networked inventory, no logistics intelligence. One farm goes out of stock, a customer bounces forever.</p>
+        <p>Mànnara solves this with a <strong>network-first architecture</strong>: we bind dozens of nearby producers into a single virtual catalogue, so demand never exhausts supply, and IoT-driven production monitoring tells us what's coming before it arrives. Every product you see is available — or we know the exact date it will be.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────── HOW IT WORKS ─────────────────────── -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-label">The Architecture</div>
+    <h2 class="how-headline">Three forces.<br><em>One living marketplace.</em></h2>
+    <p class="how-sub">Mànnara isn't a directory — it's a dynamic system. Producers, buyers, and logistics are wired together through real-time data from the field.</p>
+
+    <div class="pillar-grid">
+      <div class="pillar">
+        <div class="pillar-num">01</div>
+        <div class="pillar-icon">⬡</div>
+        <h3>Network Effect</h3>
+        <p>We aggregate producers by geography and product type. When one farm's Castelvetrano olives run low, a neighbouring estate seamlessly fills the gap — same variety, same quality standard, zero stockout. The more producers join, the more reliable the catalogue becomes for every buyer.</p>
+        <div class="pillar-tag">Virtual stock pooling</div>
+      </div>
+
+      <div class="pillar">
+        <div class="pillar-num">02</div>
+        <div class="pillar-icon">◎</div>
+        <h3>Agritech Forecasting</h3>
+        <p>IoT sensors in orchards, weather APIs, and satellite crop-health data feed a continuous production model. We know weeks ahead how much Bronte pistachio this harvest yields, which Etna wine estates will underperform, and when demand spikes are coming from EU markets — matching supply to demand before gaps appear.</p>
+        <div class="pillar-tag">IoT · satellite · AI demand models</div>
+      </div>
+
+      <div class="pillar">
+        <div class="pillar-num">03</div>
+        <div class="pillar-icon">↗</div>
+        <h3>Smart Drop-Shipping</h3>
+        <p>We hold zero physical inventory. Every order is fulfilled directly by the producer. Our routing engine groups orders by proximity — multiple producers in the same valley, multiple customers in the same city — so the delivery cost is amortised across each shipment. Zero overstock risk for us; maximum margin for producers.</p>
+        <div class="pillar-tag">Geo-clustered routing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────── PRODUCERS ─────────────────────── -->
+<section class="producers" id="producers">
+  <div class="container">
+    <div class="section-label">For Producers</div>
+    <div class="grid-2" style="align-items:end; margin-bottom:0;">
+      <h2 class="headline">Your harvest.<br><em>Europe's table.</em></h2>
+      <p style="color:rgba(26,18,16,0.65); font-size:1rem; padding-bottom:0.5rem;">You grow it. We sell it. You ship it. That's all. No warehousing, no upfront investment in digital infrastructure, no middlemen eating your margin. Hover the cards to see what you get.</p>
+    </div>
+
+    <div class="card-grid">
+      <!-- Card 1 -->
+      <div class="flip-card">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="flip-front-bg">🫒</div>
+            <span class="label">Olive growers</span>
+            <h4>Oils &amp; Preserved</h4>
+            <p>DOP extra-virgins, infused varieties, tapenades</p>
+          </div>
+          <div class="flip-back">
+            <h4>What Mànnara does for you</h4>
+            <ul>
+              <li>EU storefont live in &lt;48 hours</li>
+              <li>Demand forecasts before harvest</li>
+              <li>Geo-grouped delivery batching</li>
+              <li>Zero stock risk on your side</li>
+              <li>Priority listing for DOP certified</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="flip-card">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="flip-front-bg">🍇</div>
+            <span class="label">Winemakers</span>
+            <h4>Etna &amp; Island Wines</h4>
+            <p>Nerello, Grillo, Catarratto and natural labels</p>
+          </div>
+          <div class="flip-back">
+            <h4>What Mànnara does for you</h4>
+            <ul>
+              <li>Pre-sell vintages before bottling</li>
+              <li>Linked to seasonal demand data</li>
+              <li>Temperature-aware logistics routing</li>
+              <li>Multilingual product storytelling</li>
+              <li>Connect to EU HoReCa buyers</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="flip-card">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="flip-front-bg">🧀</div>
+            <span class="label">Cheesemakers</span>
+            <h4>Aged &amp; Fresh Cheeses</h4>
+            <p>Ragusano DOP, Pecorino, Piacentinu, ricotta</p>
+          </div>
+          <div class="flip-back">
+            <h4>What Mànnara does for you</h4>
+            <ul>
+              <li>Cold-chain grouped shipments</li>
+              <li>Managed production calendar sync</li>
+              <li>Backorder &amp; pre-order tools</li>
+              <li>EU customs &amp; labelling support</li>
+              <li>Seasonal demand alerts</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="flip-card">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="flip-front-bg">🌿</div>
+            <span class="label">Specialty crops</span>
+            <h4>Pistachios, Almonds &amp; Herbs</h4>
+            <p>Bronte pistachio IGP, Avola almond, capers, saffron</p>
+          </div>
+          <div class="flip-back">
+            <h4>What Mànnara does for you</h4>
+            <ul>
+              <li>Harvest-synced release windows</li>
+              <li>Waitlist &amp; pre-order demand capture</li>
+              <li>IoT integration for yield monitoring</li>
+              <li>Pooling with nearby growers</li>
+              <li>Premium tier European pricing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────── BUYERS ─────────────────────── -->
+<section class="buyers" id="buyers">
+  <div class="container">
+    <div class="section-label">For Buyers</div>
+    <h2 class="headline" style="margin-bottom:0.75rem;">Who eats<br><em>from Sicily.</em></h2>
+    <p style="color:rgba(26,18,16,0.55); max-width:55ch; margin-bottom:3rem;">Mànnara is built for people who care where food comes from — and hate finding it's out of stock.</p>
+
+    <div class="grid-3">
+      <div class="buyer-card">
+        <div class="buyer-emoji">🍽️</div>
+        <div class="tagline">Restaurants &amp; HoReCa</div>
+        <h3>The Chef</h3>
+        <p>You have a menu that lives and dies by ingredient provenance. You need Pachino cherry tomatoes in July and Modica chocolate year-round. With Mànnara, one order routes across the best available producers — all verified, all Sicilian.</p>
+        <div class="benefit-list">
+          <span>Reliable supply across seasons</span>
+          <span>Multi-producer single invoice</span>
+          <span>Advance harvest calendars</span>
+        </div>
+      </div>
+
+      <div class="buyer-card">
+        <div class="buyer-emoji">🧺</div>
+        <div class="tagline">Specialty Food Retail</div>
+        <h3>The Deli &amp; Importer</h3>
+        <p>Your shelves tell a story. One Sicilian producer isn't enough — you need breadth, consistency, and a reliable restocking flow. Mànnara gives you a curated, always-available range with wholesale pricing and grouped logistics.</p>
+        <div class="benefit-list">
+          <span>Consolidated wholesale catalogue</span>
+          <span>Stock alerts &amp; reorder automation</span>
+          <span>Traceability &amp; certification docs</span>
+        </div>
+      </div>
+
+      <div class="buyer-card">
+        <div class="buyer-emoji">🏡</div>
+        <div class="tagline">Discerning Consumers</div>
+        <h3>The Food-Lover</h3>
+        <p>You've tasted the difference between supermarket olive oil and a real Nocellara extra-virgin. You want to order directly from the people who made it, know the harvest year, and never discover it's sold out mid-checkout again.</p>
+        <div class="benefit-list">
+          <span>Full producer transparency</span>
+          <span>Harvest &amp; origin stories</span>
+          <span>Subscriptions &amp; seasonal boxes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────── AGRITECH ─────────────────────── -->
+<section class="agritech" id="technology">
+  <div class="container">
+    <div class="agritech-inner">
+      <div>
+        <div class="section-label">The Intelligence Layer</div>
+        <h2><em>Forecast.</em><br>Not react.</h2>
+        <p>Every traditional marketplace is reactive. Stock disappears; buyers leave. Mànnara runs a live model of Sicilian agricultural production — blending IoT field sensors, satellite multispectral imaging, and historical demand curves into a single forecast engine.</p>
+        <p>We know what's coming before producers pack the first crate. Buyers see accurate availability windows. Producers receive demand signals before harvest so they can price and allocate strategically. No waste. No stockout. No surprise.</p>
+        <p style="font-style:italic; color:rgba(244,237,216,0.4); font-family: var(--ff-display); font-size:1.15rem;">As much to go as to get — waste on neither end.</p>
+
+        <div class="mock-chart">
+          <div class="chart-label">Projected Harvest Availability — Bronte Pistachio IGP · 2025</div>
+          <div class="chart-bars">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+          <div class="chart-meta">
+            <span>Jan</span><span>Mar</span><span>May</span>
+            <span>Jul</span><span>Sep ↑ Peak</span><span>Dec</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="tech-stack">
+          <div class="tech-row">
+            <div class="tech-dot"></div>
+            <span class="tech-row-label">IoT Field Sensors</span>
+            <span class="tech-row-desc">Soil moisture, temperature, crop stress — real-time, per farm</span>
+          </div>
+          <div class="tech-row">
+            <div class="tech-dot"></div>
+            <span class="tech-row-label">Satellite NDVI</span>
+            <span class="tech-row-desc">Multispectral crop health mapping updated weekly</span>
+          </div>
+          <div class="tech-row">
+            <div class="tech-dot"></div>
+            <span class="tech-row-label">Demand Modelling</span>
+            <span class="tech-row-desc">EU purchasing patterns, seasonal indexes &amp; event data</span>
+          </div>
+          <div class="tech-row">
+            <div class="tech-dot"></div>
+            <span class="tech-row-label">Geo Routing Engine</span>
+            <span class="tech-row-desc">Cluster nearby orders &amp; producers to minimise delivery cost</span>
+          </div>
+          <div class="tech-row">
+            <div class="tech-dot"></div>
+            <span class="tech-row-label">Virtual Stock API</span>
+            <span class="tech-row-desc">Zero physical warehousing — all inventory is virtual &amp; forecast-backed</span>
+          </div>
+          <div class="tech-row">
+            <div class="tech-dot"></div>
+            <span class="tech-row-label">Blockchain Trace</span>
+            <span class="tech-row-desc">Farm-to-table traceability for DOP &amp; organic certification</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────── VS COMPETITORS ─────────────────── -->
+<section class="versus" id="versus">
+  <div class="container">
+    <div class="section-label">Competitive Landscape</div>
+    <h2>Why <em>Mànnara</em> is different.</h2>
+    <p class="versus-sub">Existing platforms treat Sicilian food like a static catalogue. We treat it like a living ecosystem — because it is.</p>
+
+    <div style="overflow-x:auto;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th class="us-head">Mànnara</th>
+            <th>DallaSicilia</th>
+            <th>InSicilia</th>
+            <th>Eataly</th>
+            <th>Bottega Sicana</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Multi-producer virtual stock pool</td>
+            <td class="col-us yes">Real-time pooling</td>
+            <td class="no">Single-producer</td>
+            <td class="partial">Marketplace only</td>
+            <td class="partial">Curated, limited</td>
+            <td class="no">Single producer</td>
+          </tr>
+          <tr>
+            <td>Agritech production forecasting</td>
+            <td class="col-us yes">IoT + satellite</td>
+            <td class="no">None</td>
+            <td class="no">None</td>
+            <td class="no">None</td>
+            <td class="no">None</td>
+          </tr>
+          <tr>
+            <td>Demand / supply matching engine</td>
+            <td class="col-us yes">AI-driven</td>
+            <td class="no">None</td>
+            <td class="no">None</td>
+            <td class="partial">Manual curation</td>
+            <td class="no">None</td>
+          </tr>
+          <tr>
+            <td>Drop-ship / zero inventory model</td>
+            <td class="col-us yes">Full dropship</td>
+            <td class="partial">Mixed</td>
+            <td class="partial">Mixed</td>
+            <td class="no">Own warehouse</td>
+            <td class="yes">Dropship</td>
+          </tr>
+          <tr>
+            <td>Geo-clustered delivery routing</td>
+            <td class="col-us yes">Algorithmic</td>
+            <td class="no">None</td>
+            <td class="no">None</td>
+            <td class="no">None</td>
+            <td class="no">None</td>
+          </tr>
+          <tr>
+            <td>Pan-European B2C + B2B focus</td>
+            <td class="col-us yes">Both</td>
+            <td class="partial">Mostly B2C</td>
+            <td class="yes">Both</td>
+            <td class="yes">Both</td>
+            <td class="partial">Mostly B2C</td>
+          </tr>
+          <tr>
+            <td>Guaranteed availability windows</td>
+            <td class="col-us yes">Forecast-backed</td>
+            <td class="no">Best effort</td>
+            <td class="no">Best effort</td>
+            <td class="partial">Managed</td>
+            <td class="no">Best effort</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────── WAITLIST ─────────────────────── -->
+<section class="waitlist" id="waitlist">
+  <div class="container">
+    <div class="waitlist-inner">
+      <div class="section-label" style="color:var(--gold-lt);">Early Access</div>
+      <h2>Be the first<br>to <em>harvest this.</em></h2>
+      <p class="waitlist-sub">Mànnara is currently accepting founding producers and early buyer partners. Founding members get lifetime reduced commission rates, co-design input on the platform, and priority placement when we launch to the European market.</p>
+
+      <div class="waitlist-cards">
+        <!-- Producer -->
+        <div class="waitlist-card producer">
+          <div class="wl-type">I am a Producer</div>
+          <h3>Founding Producer</h3>
+          <p>Sicilian growers, food artisans, and co-operatives who want to reach the European market — with no inventory risk and smart demand signals from the field.</p>
+          <div class="perks">
+            <span>0% commission for the first 12 months</span>
+            <span>Co-design the platform with our team</span>
+            <span>Priority listing &amp; featured stories</span>
+            <span>Free IoT sensor integration pilot</span>
+          </div>
+          <a href="mailto:produttori@mannara.eu?subject=Founding%20Producer%20Application&body=Hello%2C%0A%0AI'm%20interested%20in%20joining%20M%C3%A0nnara%20as%20a%20founding%20producer.%0A%0AName%3A%0AProduction%20type%3A%0ALocation%20in%20Sicily%3A%0AApproximate%20annual%20production%3A%0A%0ALooking%20forward%20to%20hearing%20from%20you."
+            class="btn-wl-producer">
+            Apply as Founding Producer →
+          </a>
+        </div>
+
+        <!-- Buyer -->
+        <div class="waitlist-card buyer">
+          <div class="wl-type">I am a Buyer</div>
+          <h3>Early Buyer Access</h3>
+          <p>Restaurants, specialty food retailers, importers, and passionate consumers who want a reliable, transparent, always-available source for the best of Sicilian food.</p>
+          <div class="perks">
+            <span>First access to the full catalogue</span>
+            <span>Locked wholesale rates for HoReCa</span>
+            <span>Advance harvest calendars &amp; pre-order</span>
+            <span>Direct producer introductions</span>
+          </div>
+          <a href="mailto:buyers@mannara.eu?subject=Early%20Buyer%20Access%20Request&body=Hello%2C%0A%0AI%20would%20like%20to%20join%20M%C3%A0nnara's%20early%20buyer%20access%20programme.%0A%0AName%2FCompany%3A%0AType%20(restaurant%2C%20retail%2C%20importer%2C%20consumer)%3A%0ACountry%3A%0AProducts%20most%20interested%20in%3A%0A%0AThank%20you."
+            class="btn-wl-buyer">
+            Request Early Buyer Access →
+          </a>
+        </div>
+      </div>
+
+      <p class="email-note">
+        Prefer to just say hello? Write directly to <a href="mailto:hello@mannara.eu">hello@mannara.eu</a> &nbsp;·&nbsp;
+        Based in Sicily, shipping across Europe &nbsp;·&nbsp; No spam. Ever.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────── FOOTER ─────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Mànnara <span>·</span></div>
+      <div class="footer-center">
+        Sicily's living marketplace · Built with land &amp; data<br>
+        © 2025 Mànnara &nbsp;·&nbsp; All rights reserved
+      </div>
+      <div class="footer-right">
+        <a href="mailto:hello@mannara.eu">hello@mannara.eu</a><br>
+        Palermo, Sicily — Europe
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
